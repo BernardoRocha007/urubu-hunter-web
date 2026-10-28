@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
-import { Sparkles, SlidersHorizontal, RefreshCw, Compass, Bell } from 'lucide-react';
+import Image from 'next/image';
+import { Sparkles, SlidersHorizontal, RefreshCw, Bell } from 'lucide-react';
 import { DomainId, DomainDefinition, HuntStatus } from '@/types';
 
 interface HeaderProps {
@@ -30,8 +31,15 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="header" id="main-header">
       <div className="container header-content">
         <div className="brand-wrapper">
-          <div className="brand-badge">
-            <Compass size={22} color="#FFFFFF" strokeWidth={2.5} />
+          <div className="brand-badge" style={{ padding: 0, overflow: 'hidden', borderRadius: '50%', border: '1.5px solid var(--border-highlight)', width: '38px', height: '38px' }}>
+            <Image
+              src="/urubu-icon.png"
+              alt="Urubu Hunter Icon"
+              width={38}
+              height={38}
+              priority
+              style={{ objectFit: 'cover', borderRadius: '50%', display: 'block' }}
+            />
           </div>
           <div className="brand-info">
             <h1 className="brand-title">URUBU HUNTER</h1>

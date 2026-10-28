@@ -301,12 +301,12 @@ export const CustomHuntModal: React.FC<CustomHuntModalProps> = ({
             border: '1px solid var(--border-subtle)'
           }}>
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF', marginBottom: '8px' }}>
-              Adicionar nova loja para garimpar
+              Adicionar qualquer loja ou produto para garimpar
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <input
                 type="text"
-                placeholder="Ex: https://classofficial.com.br ou https://kuehlofficial.com"
+                placeholder="Cole qualquer URL de loja ou produto (Ex: pacecompany.com.br, carnan.com.br, link de produto...)"
                 value={newStoreInput}
                 onChange={(e) => {
                   setNewStoreInput(e.target.value);

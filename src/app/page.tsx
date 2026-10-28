@@ -7,7 +7,7 @@ import { StyleProfileModal } from '@/components/StyleProfileModal';
 import { WatchlistModal } from '@/components/WatchlistModal';
 import { CustomHuntModal } from '@/components/CustomHuntModal';
 import { DomainId, DomainDefinition, CuratedItem, StyleProfile, HuntStatus, WatchlistItem, PaginatedItemsResponse, ClearFeedResponse } from '@/types';
-import { CheckCircle2, AlertTriangle, RefreshCw, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, RefreshCw, Search, ChevronLeft, ChevronRight, Globe, Sparkles } from 'lucide-react';
 
 export default function HomePage() {
   const [domains, setDomains] = useState<Record<string, DomainDefinition>>({});
@@ -41,6 +41,7 @@ export default function HomePage() {
   const [minScore, setMinScore] = useState<number | undefined>(undefined);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [quickUrlInput, setQuickUrlInput] = useState('');
 
   // Debounce na barra de pesquisa (280ms) para não sobrecarregar a digitação
   useEffect(() => {
@@ -279,6 +280,19 @@ export default function HomePage() {
     }
   };
 
+  // Garimpa qualquer URL informada diretamente (loja inteira ou peca individual)
+  const handleQuickUrlHunt = async () => {
+    let raw = quickUrlInput.trim();
+    if (!raw || huntStatus.isRunning) return;
+
+    if (!raw.startsWith('http://') && !raw.startsWith('https://')) {
+      raw = "https://" + raw;
+    }
+
+    setQuickUrlInput('');
+    await handleTriggerCustomHunt([raw]);
+  };
+
   // Limpa feed mantendo favoritos
   const handleClearFeed = async () => {
     if (isClearingFeed) return;
@@ -394,6 +408,59 @@ export default function HomePage() {
       )}
 
       <main className="container" style={{ flexGrow: 1, paddingBottom: '40px', paddingTop: '20px' }}>
+        {/* Barra de Garimpo Universal por URL */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'center',
+            background: 'var(--bg-surface)',
+            padding: '12px 18px',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-subtle)',
+            marginBottom: '16px'
+          }}
+          id="quick-url-hunter-bar"
+        >
+          <div style={{ color: 'var(--accent-primary)', display: 'flex', alignItems: 'center' }}>
+            <Globe size={18} />
+          </div>
+          <input
+            type="text"
+            placeholder="Cole qualquer URL de loja ou produto (ex: pacecompany.com.br, carnan.com.br, link de produto...)"
+            value={quickUrlInput}
+            onChange={(e) => setQuickUrlInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleQuickUrlHunt();
+              }
+            }}
+            className="filter-input"
+            style={{ flexGrow: 1, fontSize: '13px' }}
+            id="input-quick-hunt-url"
+          />
+          <button
+            className="btn btn-primary"
+            onClick={handleQuickUrlHunt}
+            disabled={huntStatus.isRunning || !quickUrlInput.trim()}
+            id="btn-quick-hunt-url"
+            style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            {huntStatus.isRunning ? (
+              <>
+                <RefreshCw size={14} className="animate-spin" />
+                <span>Garimpando...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles size={14} />
+                <span>Garimpar URL</span>
+              </>
+            )}
+          </button>
+        </div>
+
         <FilterBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -439,10 +506,35 @@ export default function HomePage() {
                 }}
                 id="pagination-controls"
               >
-                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  Mostrando <strong style={{ color: 'var(--text-primary)' }}>{(page - 1) * 20 + 1}</strong> a{' '}
-                  <strong style={{ color: 'var(--text-primary)' }}>{Math.min(page * 20, totalItems)}</strong> de{' '}
-                  <strong style={{ color: 'var(--text-primary)' }}>{totalItems}</strong> produtos
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    Mostrando <strong style={{ color: 'var(--text-primary)' }}>{(page - 1) * 20 + 1}</strong> a{' '}
+                    <strong style={{ color: 'var(--text-primary)' }}>{Math.min(page * 20, totalItems)}</strong> de{' '}
+                    <strong style={{ color: 'var(--text-primary)' }}>{totalItems}</strong> produtos
+                  </div>
+
+                  {totalItems >= 500 && (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        padding: '3px 10px',
+                        borderRadius: 'var(--radius-sm)',
+                        background: 'rgba(234, 179, 8, 0.12)',
+                        color: '#FACC15',
+                        border: '1px solid rgba(234, 179, 8, 0.35)',
+                        letterSpacing: '0.01em'
+                      }}
+                      id="badge-max-items-reached"
+                      title="Limite máximo de 500 itens atingido para garantir fluidez e economia de memória no seu computador."
+                    >
+                      <AlertTriangle size={13} />
+                      <span>Limite máximo atingido (500)</span>
+                    </span>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

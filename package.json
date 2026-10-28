@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:all": "concurrently -k -p \"[{name}]\" -n \"DOTNET,NEXTJS\" -c \"bgCyan.bold,bgMagenta.bold\" \"dotnet run --project \\\"C:\\Computaria\\Projetos C#\\UrubuApi\\\"\" \"next dev\"",
+    "dev:all": "concurrently -k -p \"[{name}]\" -n \"DOTNET,NEXTJS\" -c \"bgCyan.bold,bgMagenta.bold\" \"dotnet run --project ../urubu-hunter-api\" \"next dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
