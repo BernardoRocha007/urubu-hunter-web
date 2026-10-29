@@ -1,11 +1,11 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
 import { CuratedItem } from '@/types/hunter';
 import { FilterBar } from './FilterBar';
 import { ItemCard } from './ItemCard';
-import { sendFeedback } from '@/lib/api';
-import { Sparkles, PackageOpen } from 'lucide-react';
+import { enviarFeedback } from '@/lib/api';
+import { PackageOpen } from 'lucide-react';
 
 interface FeedGridProps {
   initialItems: CuratedItem[];
@@ -20,18 +20,18 @@ export const FeedGrid: React.FC<FeedGridProps> = ({ initialItems, availableCateg
   const [minScore, setMinScore] = useState<number | undefined>();
 
   // Feedback otimista
-  const handleFeedback = async (id: string, feedback: 'liked' | 'disliked' | 'saved' | null) => {
+  const aoRegistrarFeedback = async (id: string, feedback: 'liked' | 'disliked' | 'saved' | null) => {
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, feedback } : item))
     );
     try {
-      await sendFeedback(id, feedback);
+      await enviarFeedback(id, feedback);
     } catch (err) {
       console.error('[Feedback error]:', err);
     }
   };
 
-  // Filtragem ultra-rÃ¡pida no cliente
+  // Filtragem ultra-rápida no cliente
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       if (saleOnly && (!item.discountPct || item.discountPct <= 0)) return false;
@@ -68,15 +68,15 @@ export const FeedGrid: React.FC<FeedGridProps> = ({ initialItems, availableCateg
       {filteredItems.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
-            <ItemCard key={item.id} item={item} onFeedback={handleFeedback} />
+            <ItemCard key={item.id} item={item} onFeedback={aoRegistrarFeedback} />
           ))}
         </div>
       ) : (
         <div className="rounded-2xl border border-white/5 bg-zinc-900/30 p-12 text-center flex flex-col items-center justify-center">
           <PackageOpen className="w-12 h-12 text-zinc-600 mb-3" />
-          <h3 className="text-lg font-bold text-white">Nenhuma peÃ§a encontrada</h3>
+          <h3 className="text-lg font-bold text-white">Nenhuma peça encontrada</h3>
           <p className="text-sm text-zinc-400 mt-1 max-w-sm">
-            Tente ajustar os filtros acima ou aguarde o prÃ³ximo ciclo de garimpo da API C#.
+            Tente ajustar os filtros acima ou aguarde o próximo ciclo de garimpo da API C#.
           </p>
         </div>
       )}

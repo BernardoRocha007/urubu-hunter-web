@@ -1,14 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:5033/api/:path*",
-      },
-    ];
-  },
+  // Configuração padrão Next.js (as rotas /api/* são tratadas pelo Route Handler com proxy seguro)
 };
 
 export default nextConfig;
